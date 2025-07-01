@@ -15,3 +15,6 @@
 ### Crear Receta 
 ![Recetas](./Imagenes/crearReceta.png)
 
+### Se crean las Recetas y se añade de una vez el proceso de la receta
+
+![Recetas](./Imagenes/receta2.png)
