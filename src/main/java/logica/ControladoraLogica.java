@@ -101,8 +101,6 @@ public class ControladoraLogica {
                 BigDecimal cantidad = new BigDecimal(modeloTabla.getValueAt(fila, 1).toString());
 
                 controladoraPersistencia.insertarDetalleRecetaConSP(receta.getIdReceta(), insumo.getIdInsumo(), cantidad);
-        
-
             }
         }
     }

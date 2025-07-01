@@ -158,6 +158,11 @@ public class RecetaForm extends JPanel {
 
     private void agregarInsumo(Insumo insumo) {
 
+        if (!Validacion.esCostoValido(txtCantidad.getText())) {
+            JOptionPane.showMessageDialog(null, "Cantidad inválida. Debe ser un número positivo con hasta 2 decimales.");
+            return;
+        }
+
         BigDecimal cantidad = new BigDecimal(txtCantidad.getText());
         BigDecimal costoPorInsumo = new BigDecimal(txtCosto.getText());
         costoPorInsumo = costoPorInsumo.multiply(cantidad);
@@ -171,18 +176,37 @@ public class RecetaForm extends JPanel {
         // Limpiar campos
         txtCantidad.setText("");
         txtCosto.setText("");
+
     }
 
     private void guardarReceta() {
         String nombre = txtNombreReceta.getText();
-        if (Validacion.esNombreValido(nombre) && controladoraLogica.validadNombreReceta(nombre)) {
-            controladoraLogica.crearReceta(nombre);
-            controladoraLogica.agregarDetalleReceta(modeloTabla, nombre);
-            JOptionPane.showMessageDialog(this, "Receta guardada exitosamente");
 
-        } else {
-            JOptionPane.showMessageDialog(null, "Algo Salio Mal, Verificar nombre de la Receta");
+        //Valida si el nombre no tiene caracteres especiales o numeros
+        if (!Validacion.esNombreValido(nombre)) {
+            JOptionPane.showMessageDialog(null, "Error: El nombre de la receta no puede contener números ni caracteres Especiales");
+            txtNombreReceta.setEditable(true);
+            return;
+        }
+
+        // Valida que el nombre no exista en la base de datos
+        if (!controladoraLogica.validadNombreReceta(nombre)) {
+            JOptionPane.showMessageDialog(null, "Error: El nombre de la receta ya existe.");
+            txtNombreReceta.setEditable(true);
+            return;
+        }
+
+        // Si pasa ambas validaciones, se guarda la receta y el detalle de la misma
+        controladoraLogica.crearReceta(nombre);
+        controladoraLogica.agregarDetalleReceta(modeloTabla, nombre);
+        JOptionPane.showMessageDialog(this, "Receta guardada exitosamente");
+
+        // Esto es para Vaciar Luego de Crear la receta y crear el detalle de la receta
+        txtNombreReceta.setText("");
+        for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
+            modeloTabla.removeRow(i);
         }
 
     }
+
 }
