@@ -11,6 +11,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import persistencia.ControladoraPersistencia;
 
 /**
@@ -70,20 +71,52 @@ public class ControladoraLogica {
     }
 
     public boolean validadNombreReceta(String nombre) {
-        boolean nombreValido=Validacion.esNombreValido(nombre);        
-        if(nombreValido){
-        Receta receta=controladoraPersistencia.esNombreRecetaPermitido(nombre);
-        return (receta==null);
+        boolean nombreValido = Validacion.esNombreValido(nombre);
+        if (nombreValido) {
+            Receta receta = controladoraPersistencia.esNombreRecetaPermitido(nombre);
+            return (receta == null);
         }
         return false;
-    
-        }
+
+    }
 
     public List<Insumo> listarInsumos() {
         return controladoraPersistencia.listarInsumos();
     }
-    
-    
-    
+
+    public void crearReceta(String nombre) {
+        Receta receta = new Receta();
+        receta.setNombreReceta(nombre);
+        receta.setCostoReceta(BigDecimal.ZERO);
+        controladoraPersistencia.crearReceta(receta);
+    }
+
+    public void agregarDetalleReceta(DefaultTableModel modeloTabla, String nombreReceta) {
+        if (!validarTablaDetalleRecetaVacia(modeloTabla)) {
+            Receta receta = buscarReceta(nombreReceta);
+
+            for (int fila = 0; fila < modeloTabla.getRowCount(); fila++) {
+
+                Insumo insumo = buscarInsumoPorNombre(modeloTabla.getValueAt(fila, 0).toString());
+                BigDecimal cantidad = new BigDecimal(modeloTabla.getValueAt(fila, 1).toString());
+
+                controladoraPersistencia.insertarDetalleRecetaConSP(receta.getIdReceta(), insumo.getIdInsumo(), cantidad);
+        
+
+            }
+        }
+    }
+
+    private boolean validarTablaDetalleRecetaVacia(DefaultTableModel modeloTabla) {
+        return modeloTabla.getRowCount() == 0;
+    }
+
+    private Receta buscarReceta(String nombreReceta) {
+        return controladoraPersistencia.buscarReceta(nombreReceta);
+    }
+
+    private Insumo buscarInsumoPorNombre(String nombreInsumo) {
+        return controladoraPersistencia.buscarInsumo(nombreInsumo);
+    }
 
 }

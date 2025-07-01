@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import logica.ControladoraLogica;
+import logica.Validacion;
 
 public class RecetaForm extends JPanel {
 
@@ -23,7 +24,6 @@ public class RecetaForm extends JPanel {
     private JComboBox<Insumo> comboInsumos;
     private JTextField txtCantidad, txtCosto;
 
-    private List<RecetaDetalle> detallesTemp = new ArrayList<>();
     private ControladoraLogica controladoraLogica;
 
     public RecetaForm() {
@@ -67,14 +67,14 @@ public class RecetaForm extends JPanel {
         // Combo Insumo
         JLabel lblInsumo = new JLabel("Insumo:");
         lblInsumo.setForeground(blanco);
-        List<Insumo> listaInsumos=controladoraLogica.listarInsumos();
+        List<Insumo> listaInsumos = controladoraLogica.listarInsumos();
         comboInsumos = new JComboBox<>();
         // Aquí puedes cargar insumos desde tu lógica (mock temporal)
-        for(Insumo insumo:listaInsumos){
+        for (Insumo insumo : listaInsumos) {
             comboInsumos.addItem(insumo);
         }
-        
-        comboInsumos.addFocusListener(new FocusListener(){
+
+        comboInsumos.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent fe) {
                 //aqui no se hace nada, pero esta definido
@@ -85,10 +85,9 @@ public class RecetaForm extends JPanel {
                 Insumo insumo = (Insumo) comboInsumos.getSelectedItem();
                 txtCosto.setText(String.valueOf(insumo.getCostoInsumo()));
             }
-                      
+
         });
-        
-        
+
         gbc.gridx = 0;
         gbc.gridy = 1;
         panelFormulario.add(lblInsumo, gbc);
@@ -124,16 +123,9 @@ public class RecetaForm extends JPanel {
         btnAgregarInsumo.setForeground(blanco);
 
         btnAgregarInsumo.addActionListener(e -> {
-            String nombre = txtNombreReceta.getText();
-            if (!controladoraLogica.validadNombreReceta(nombre)) {
-                JOptionPane.showMessageDialog(this, "El nombre no es válido o ya existe en la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "El nombre de receta es válido y está disponible", "Validación exitosa", JOptionPane.INFORMATION_MESSAGE);
-                txtNombreReceta.setEditable(false);
-                Insumo insumo = (Insumo) comboInsumos.getSelectedItem();
-                agregarInsumo(insumo);
-            }
-
+            txtNombreReceta.setEditable(false);
+            Insumo insumo = (Insumo) comboInsumos.getSelectedItem();
+            agregarInsumo(insumo);
         });
 
         gbc.gridx = 1;
@@ -165,17 +157,16 @@ public class RecetaForm extends JPanel {
     }
 
     private void agregarInsumo(Insumo insumo) {
-        
-        BigDecimal cantidad = new BigDecimal(txtCantidad.getText());
-        BigDecimal costo = new BigDecimal(txtCosto.getText());
 
-        modeloTabla.addRow(new Object[]{insumo.getNombreInsumo(), cantidad, costo});
+        BigDecimal cantidad = new BigDecimal(txtCantidad.getText());
+        BigDecimal costoPorInsumo = new BigDecimal(txtCosto.getText());
+        costoPorInsumo = costoPorInsumo.multiply(cantidad);
+        modeloTabla.addRow(new Object[]{insumo.getNombreInsumo(), cantidad, costoPorInsumo});
 
         RecetaDetalle detalle = new RecetaDetalle();
         detalle.setIdInsumo(insumo);
         detalle.setCantidadInsumo(cantidad);
-        detalle.setCostoInsumo(costo);
-        detallesTemp.add(detalle);
+        detalle.setCostoInsumo(costoPorInsumo);
 
         // Limpiar campos
         txtCantidad.setText("");
@@ -184,16 +175,14 @@ public class RecetaForm extends JPanel {
 
     private void guardarReceta() {
         String nombre = txtNombreReceta.getText();
-        BigDecimal costoTotal = detallesTemp.stream()
-                .map(RecetaDetalle::getCostoInsumo)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        if (Validacion.esNombreValido(nombre) && controladoraLogica.validadNombreReceta(nombre)) {
+            controladoraLogica.crearReceta(nombre);
+            controladoraLogica.agregarDetalleReceta(modeloTabla, nombre);
+            JOptionPane.showMessageDialog(this, "Receta guardada exitosamente");
 
-        Receta receta = new Receta();
-        receta.setNombreReceta(nombre);
-        receta.setCostoReceta(costoTotal);
-        receta.setRecetaDetalleList(detallesTemp);
+        } else {
+            JOptionPane.showMessageDialog(null, "Algo Salio Mal, Verificar nombre de la Receta");
+        }
 
-        // Aquí puedes llamar a tu controlador o lógica para guardar en BD
-        JOptionPane.showMessageDialog(this, "Receta guardada exitosamente");
     }
 }

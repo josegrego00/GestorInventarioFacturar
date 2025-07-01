@@ -12,6 +12,7 @@ logica/Insumo.class
 logica/Insumo_.class
 persistencia/RecetaDetalleJpaController.class
 vista/inventario/RecetaForm.class
+vista/inventario/RecetaForm$1.class
 logica/Producto_.class
 vista/MainView.class
 logica/CategoriaProducto.class

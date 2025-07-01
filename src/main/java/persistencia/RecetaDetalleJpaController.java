@@ -5,11 +5,15 @@
 package persistencia;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.ParameterMode;
+import javax.persistence.Persistence;
+import javax.persistence.StoredProcedureQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import logica.Insumo;
@@ -27,6 +31,10 @@ public class RecetaDetalleJpaController implements Serializable {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
+
+    RecetaDetalleJpaController() {
+        this.emf = Persistence.createEntityManagerFactory("persistenciaPU");
+    }
 
     public EntityManager getEntityManager() {
         return emf.createEntityManager();
@@ -192,6 +200,29 @@ public class RecetaDetalleJpaController implements Serializable {
             em.close();
         }
     }
-    
-   
+
+    public void insertarDetalleRecetaConSP(int idReceta, int idInsumo, BigDecimal cantidadInsumo) {
+        EntityManager em = emf.createEntityManager(); // Asegurate de tener 'emf' definido como EntityManagerFactory
+
+        try {
+            StoredProcedureQuery query = em.createStoredProcedureQuery("insertar_receta_detalle");
+
+            query.registerStoredProcedureParameter("p_id_receta", Integer.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("p_id_insumo", Integer.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("p_cantidad_insumo", BigDecimal.class, ParameterMode.IN);
+
+            query.setParameter("p_id_receta", idReceta);
+            query.setParameter("p_id_insumo", idInsumo);
+            query.setParameter("p_cantidad_insumo", cantidadInsumo);
+
+            query.execute();
+
+        } catch (Exception e) {
+            System.err.println("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
+            throw e; // o manejalo como prefieras
+        } finally {
+            em.close();
+        }
+    }
+
 }
