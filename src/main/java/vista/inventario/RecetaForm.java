@@ -67,13 +67,13 @@ public class RecetaForm extends JPanel {
         // Combo Insumo
         JLabel lblInsumo = new JLabel("Insumo:");
         lblInsumo.setForeground(blanco);
-        List<Insumo> listaInsumos = controladoraLogica.listarInsumos();
-        comboInsumos = new JComboBox<>();
-        // Aquí puedes cargar insumos desde tu lógica (mock temporal)
-        for (Insumo insumo : listaInsumos) {
-            comboInsumos.addItem(insumo);
-        }
 
+        
+        // Aqui creo los insumos y esto hace que se actualicen 
+        //      cuando se estan cambiando de panles
+        comboInsumos = new JComboBox<>();
+        recargarInsumos(); // este es el metodo q refresca los insumo
+        
         comboInsumos.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent fe) {
@@ -208,5 +208,16 @@ public class RecetaForm extends JPanel {
         }
 
     }
+
+   public void recargarInsumos() {
+    
+       // se eliminan todos los Insumos para Cargarlos nuevamnete
+       
+    comboInsumos.removeAllItems(); // Limpia el combo actual
+    List<Insumo> listaInsumos = controladoraLogica.listarInsumos(); // Carga actualizada
+    for (Insumo insumo : listaInsumos) {
+        comboInsumos.addItem(insumo);
+    }
+}
 
 }

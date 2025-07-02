@@ -43,7 +43,7 @@ public class InsumoForm extends JPanel {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Título
-        JLabel lblTitulo = new JLabel("Formulario de Insumo");
+        JLabel lblTitulo = new JLabel("Creaccion de Insumo");
         lblTitulo.setFont(titleFont);
         lblTitulo.setForeground(blanco);
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);

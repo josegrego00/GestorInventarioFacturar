@@ -8,6 +8,7 @@
 /home/josepino/NetBeansProjects/ComidasRapidas/src/main/java/persistencia/RecetaJpaController.java
 /home/josepino/NetBeansProjects/ComidasRapidas/src/main/java/persistencia/CategoriaProductoJpaController.java
 /home/josepino/NetBeansProjects/ComidasRapidas/src/main/java/logica/RecetaDetalle.java
+/home/josepino/NetBeansProjects/ComidasRapidas/src/main/java/vista/inventario/GestionInsumoForm.java
 /home/josepino/NetBeansProjects/ComidasRapidas/src/main/java/persistencia/InsumoJpaController.java
 /home/josepino/NetBeansProjects/ComidasRapidas/src/main/java/persistencia/exceptions/IllegalOrphanException.java
 /home/josepino/NetBeansProjects/ComidasRapidas/src/main/java/logica/Validacion.java

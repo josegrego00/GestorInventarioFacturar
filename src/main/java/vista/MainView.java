@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import vista.inventario.GestionInsumoForm;
 
 public class MainView extends JFrame {
 
@@ -13,6 +14,7 @@ public class MainView extends JFrame {
     // Paneles para cada módulo
     private vista.inventario.InsumoForm insumoForm;
     private vista.inventario.RecetaForm recetaForm;
+    private vista.inventario.GestionInsumoForm gestionInsumoForm;
 
     public MainView() {
         setTitle("Sistema de Gestión - Principal");
@@ -41,7 +43,11 @@ public class MainView extends JFrame {
         JMenu menuInventario = new JMenu("Inventario");
         menuInventario.setForeground(blanco);
         JMenuItem itemInsumos = new JMenuItem("Gestión de Insumos");
-        itemInsumos.addActionListener(e -> mostrarModuloInsumos());
+        itemInsumos.addActionListener(e -> {
+            cardLayout.show(contentPane, "gestionInsumo");
+            setTitle("Sistema de Gestión - Gesstion de Insumos");
+
+        });
         menuInventario.add(itemInsumos);
 
         // Menú Ventas
@@ -66,22 +72,26 @@ public class MainView extends JFrame {
         // Botones del sidebar
         JButton btnInsumos = crearBotonSidebar("Insumos", "src/resources/insumos.png");
         btnInsumos.addActionListener(e -> mostrarModuloInsumos());
-        
+
         // Botones del sidebar
         JButton btnRecetas = crearBotonSidebar("Recetas", "src/resources/recetas.png");
         btnRecetas.addActionListener(e -> {
+            recetaForm.recargarInsumos(); // Actualiza insumos
             cardLayout.show(contentPane, "recetas");
             setTitle("Sistema de Gestión - Módulo de Recetas");
         });
         sidebar.add(btnRecetas);
 
         JButton btnVentas = crearBotonSidebar("Ventas", "src/resources/ventas.png");
+        JButton btnCompras = crearBotonSidebar("Compras", "src/resources/compras.png");
         JButton btnReportes = crearBotonSidebar("Reportes", "src/resources/reportes.png");
 
         sidebar.add(Box.createVerticalStrut(20));
         sidebar.add(btnInsumos);
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(btnVentas);
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(btnCompras);
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(btnReportes);
 
@@ -91,12 +101,18 @@ public class MainView extends JFrame {
         contentPane.setBackground(blanco);
 
         // Inicializar módulos
-        insumoForm = new vista.inventario.InsumoForm();
+        // aqui es donde Cargo los Modulos al Menu Principal
+        gestionInsumoForm = new vista.inventario.GestionInsumoForm();
+        contentPane.add(gestionInsumoForm, "gestionInsumo");
+
+        //Agregar Receta al ContentPAne
         recetaForm = new vista.inventario.RecetaForm();
         contentPane.add(recetaForm, "recetas");
 
-        // Agregar módulos al contentPane
+        // Agregar Imdumo al contentPane
         contentPane.add(new JPanel(), "inicio"); // Panel vacío inicial
+        
+        insumoForm = new vista.inventario.InsumoForm();        
         contentPane.add(insumoForm, "insumos");
 
         // Agregar componentes al mainPanel
