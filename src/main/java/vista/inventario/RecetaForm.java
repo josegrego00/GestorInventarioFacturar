@@ -138,7 +138,9 @@ public class RecetaForm extends JPanel {
         JScrollPane scrollTabla = new JScrollPane(tablaInsumos);
         scrollTabla.setPreferredSize(new Dimension(600, 150));
 
-        // Botón guardar receta
+        // Botón guardar 
+        
+        
         btnGuardarReceta = new JButton("Guardar Receta");
         btnGuardarReceta.setBackground(negro);
         btnGuardarReceta.setForeground(blanco);

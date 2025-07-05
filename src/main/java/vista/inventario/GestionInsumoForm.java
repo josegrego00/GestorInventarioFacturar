@@ -14,6 +14,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import logica.ControladoraLogica;
 import logica.Insumo;
+import logica.Validacion;
+import vista.MainView;
 
 /**
  *
@@ -28,8 +30,10 @@ public class GestionInsumoForm extends JPanel {
 
     private JPanel contentPane;
     private CardLayout cardLayout;
+    private MainView mainView;
 
-    public GestionInsumoForm() {
+    public GestionInsumoForm(MainView mainView) {
+        this.mainView = mainView;
         controladora = new ControladoraLogica();
         setLayout(new BorderLayout());
         setBackground(new Color(0x003366)); // Azul oscuro
@@ -46,7 +50,14 @@ public class GestionInsumoForm extends JPanel {
         add(lblTitulo, BorderLayout.NORTH);
 
         // Tabla
-        modeloTabla = new DefaultTableModel(new Object[]{"- ID -", "- Nombre -", "- Medida -", "- Stock -", "- Costo/Unitario -"}, 0);
+        modeloTabla = new DefaultTableModel(new Object[]{"- ID -", "- Nombre -", "- Medida -", "- Stock -", "- Costo/Unitario -"}, 0) {
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
         tablaInsumos = new JTable(modeloTabla);
         JScrollPane scrollPane = new JScrollPane(tablaInsumos);
         add(scrollPane, BorderLayout.CENTER);
@@ -56,26 +67,27 @@ public class GestionInsumoForm extends JPanel {
         panelBotones.setBackground(new Color(0x003366));
 
         JButton btnCrear = new JButton("Crear Nuevo");
-        JButton btnListar = new JButton("Litar");
         JButton btnEditar = new JButton("Editar");
         JButton btnEliminar = new JButton("Eliminar");
         cardLayout = new CardLayout();
         contentPane = new JPanel(cardLayout);
 
-        btnCrear.addActionListener(e -> {
-            cardLayout.show(contentPane, "insumo");
-        });
-
         insumoForm = new vista.inventario.InsumoForm();
         contentPane.add(insumoForm, "insumos");
 
-        btnListar.addActionListener(e -> cargarInsumos());
+        btnCrear.addActionListener(e -> {
+            mainView.mostrarModuloInsumos();
+            cardLayout.show(contentPane, "insumo");
+        });
+
+       
 
         btnEditar.addActionListener(e -> editarInsumo());
 
         btnEliminar.addActionListener(e -> eliminarInsumo());
 
-        panelBotones.add(btnListar);
+        panelBotones.add(btnCrear);
+       
         panelBotones.add(btnEditar);
         panelBotones.add(btnEliminar);
 
@@ -104,17 +116,49 @@ public class GestionInsumoForm extends JPanel {
         }
 
         int id = (int) modeloTabla.getValueAt(fila, 0);
-        String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre del insumo:");
-        String nuevaUnidad = JOptionPane.showInputDialog(this, "Nueva unidad:");
-        String nuevoCostoStr = JOptionPane.showInputDialog(this, "Nuevo costo:");
+        String nombreActual = (String) modeloTabla.getValueAt(fila, 1);
+        String costoActual = (String) modeloTabla.getValueAt(fila, 4).toString();
 
-        try {
-            double nuevoCosto = Double.parseDouble(nuevoCostoStr);
-            //controladora.editarInsumo(id, nuevoNombre, nuevaUnidad, nuevoCosto);
-            JOptionPane.showMessageDialog(this, "Insumo actualizado.");
-            cargarInsumos();
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Costo inválido.");
+        JTextField campoNombre = new JTextField(nombreActual);
+        JTextField campoCosto = new JTextField(costoActual);
+
+        Object[] campos = {
+            "Nuevo Nombre:", campoNombre,
+            "Nuevo Costo Unitario:", campoCosto
+        };
+        int opcion = JOptionPane.showConfirmDialog(this, campos, "Editar Insumo", JOptionPane.OK_CANCEL_OPTION);
+
+        if (opcion == JOptionPane.OK_OPTION) {
+            String nuevoNombre = campoNombre.getText().trim();
+            String nuevoCostoStr = campoCosto.getText().trim();
+
+            if (!nuevoNombre.equals(nombreActual)) {
+                // Solo si el nombre cambió, validar si está permitido y es válido
+                if (!controladora.esNombrePermitido(nuevoNombre)) {
+                    JOptionPane.showMessageDialog(null, "Ya existe un Insumo con este nombre.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (!Validacion.esNombreValido(nuevoNombre)) {
+                    JOptionPane.showMessageDialog(null, "Algo en el nombre es inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (!Validacion.esCostoValido(nuevoCostoStr)) {
+                    JOptionPane.showMessageDialog(null, "Costo Incorrecto.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+            }
+            try {
+                double nuevoCosto = Double.parseDouble(nuevoCostoStr);
+                controladora.actualizarInsumo(id, nuevoNombre, nuevoCosto);
+                JOptionPane.showMessageDialog(this,
+                        "El insumo fue actualizado correctamente.",
+                        "Actualización exitosa",
+                        JOptionPane.INFORMATION_MESSAGE);
+                cargarInsumos(); //
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Costo inválido.");
+            }
         }
     }
 
@@ -132,8 +176,8 @@ public class GestionInsumoForm extends JPanel {
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            //controladora.eliminarInsumo(id);
-            JOptionPane.showMessageDialog(this, "Insumo eliminado.");
+            controladora.eliminarInsumoPorId(id);
+            JOptionPane.showMessageDialog(this, "Insumo eliminado completamente.");
             cargarInsumos();
         }
     }

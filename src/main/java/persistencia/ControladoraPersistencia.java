@@ -7,12 +7,16 @@ package persistencia;
 import java.math.BigDecimal;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureQuery;
 import logica.Insumo;
 import logica.Receta;
 import logica.RecetaDetalle;
+import persistencia.exceptions.IllegalOrphanException;
+import persistencia.exceptions.NonexistentEntityException;
 
 /**
  *
@@ -55,5 +59,45 @@ public class ControladoraPersistencia {
     public Insumo buscarInsumo(String nombreInsumo) {
         return insumoJpaController.buscarInsumoPorNombre(nombreInsumo);
     }
+
+    public Insumo buscarInsumoPorId(int id) {
+          return insumoJpaController.findInsumo(id);
+    }
+
+    public void modificarInsumo(Insumo insumoModificar) {
+        try {
+            insumoJpaController.edit(insumoModificar);
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void eliminarInsumoPorId(int id) {
+        try {
+            insumoJpaController.destroy(id);
+        } catch (IllegalOrphanException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public List<Receta> listarRecetas() {
+        return recetaJpaController.findRecetaEntities();
+    }
+
+    public void eliminarRecetaPorId(int id) {
+        try {
+            recetaJpaController.destroy(id);
+        } catch (IllegalOrphanException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(ControladoraPersistencia.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+   
 
 }

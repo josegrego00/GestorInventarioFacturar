@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import vista.inventario.GestionInsumoForm;
+import vista.inventario.GestionRecetaForm;
 
 public class MainView extends JFrame {
 
@@ -15,11 +16,12 @@ public class MainView extends JFrame {
     private vista.inventario.InsumoForm insumoForm;
     private vista.inventario.RecetaForm recetaForm;
     private vista.inventario.GestionInsumoForm gestionInsumoForm;
+    private vista.inventario.GestionRecetaForm gestionRecetaForm;
 
     public MainView() {
         setTitle("Sistema de Gestión - Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 700);
+        setSize(700, 500);
         setLocationRelativeTo(null);
 
         initComponents();
@@ -66,20 +68,24 @@ public class MainView extends JFrame {
         // Panel lateral (sidebar)
         JPanel sidebar = new JPanel();
         sidebar.setBackground(azulOscuro);
-        sidebar.setPreferredSize(new Dimension(200, getHeight()));
+        sidebar.setPreferredSize(new Dimension(100, getHeight()));
         sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
 
         // Botones del sidebar
         JButton btnInsumos = crearBotonSidebar("Insumos", "src/resources/insumos.png");
-        btnInsumos.addActionListener(e -> mostrarModuloInsumos());
+        btnInsumos.addActionListener(e -> {
+            cardLayout.show(contentPane, "gestionInsumo");
+            setTitle("Sistema de Gestión - Gesstion de Insumos");
+        });
 
         // Botones del sidebar
         JButton btnRecetas = crearBotonSidebar("Recetas", "src/resources/recetas.png");
         btnRecetas.addActionListener(e -> {
-            recetaForm.recargarInsumos(); // Actualiza insumos
-            cardLayout.show(contentPane, "recetas");
+            gestionRecetaForm.cargarRecetas(); // opcional si necesitas refrescar
+            cardLayout.show(contentPane, "gestionReceta");
             setTitle("Sistema de Gestión - Módulo de Recetas");
         });
+
         sidebar.add(btnRecetas);
 
         JButton btnVentas = crearBotonSidebar("Ventas", "src/resources/ventas.png");
@@ -102,8 +108,11 @@ public class MainView extends JFrame {
 
         // Inicializar módulos
         // aqui es donde Cargo los Modulos al Menu Principal
-        gestionInsumoForm = new vista.inventario.GestionInsumoForm();
+        gestionInsumoForm = new vista.inventario.GestionInsumoForm(this);
         contentPane.add(gestionInsumoForm, "gestionInsumo");
+
+        gestionRecetaForm = new vista.inventario.GestionRecetaForm(this);
+        contentPane.add(gestionRecetaForm, "gestionReceta");
 
         //Agregar Receta al ContentPAne
         recetaForm = new vista.inventario.RecetaForm();
@@ -111,8 +120,8 @@ public class MainView extends JFrame {
 
         // Agregar Imdumo al contentPane
         contentPane.add(new JPanel(), "inicio"); // Panel vacío inicial
-        
-        insumoForm = new vista.inventario.InsumoForm();        
+
+        insumoForm = new vista.inventario.InsumoForm();
         contentPane.add(insumoForm, "insumos");
 
         // Agregar componentes al mainPanel
@@ -152,9 +161,14 @@ public class MainView extends JFrame {
         return boton;
     }
 
-    private void mostrarModuloInsumos() {
+    public void mostrarModuloInsumos() {
         cardLayout.show(contentPane, "insumos");
         setTitle("Sistema de Gestión - Módulo de Insumos");
+    }
+
+    public void mostrarModuloRecetaForm() {
+        cardLayout.show(contentPane, "recetas");
+        setTitle("Sistema de Gestión - Crear o Editar Receta");
     }
 
     public static void main(String[] args) {

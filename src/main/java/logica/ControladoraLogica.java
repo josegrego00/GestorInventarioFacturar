@@ -64,10 +64,9 @@ public class ControladoraLogica {
         controladoraPersistencia.crearInsumo(insumo);
     }
 
-    private boolean esNombrePermitido(String nombre) {
+    public boolean esNombrePermitido(String nombre) {
         Insumo insumo = controladoraPersistencia.esNombrePermitido(nombre);
         return (insumo == null); // Devuelve true si no existe (nombre permitido)
-
     }
 
     public boolean validadNombreReceta(String nombre) {
@@ -115,6 +114,30 @@ public class ControladoraLogica {
 
     private Insumo buscarInsumoPorNombre(String nombreInsumo) {
         return controladoraPersistencia.buscarInsumo(nombreInsumo);
+    }
+
+    public void actualizarInsumo(int id, String nuevoNombre, double nuevoCosto) {
+        Insumo insumoModificar = buscarInsumoPorId(id);
+        insumoModificar.setCostoInsumo(BigDecimal.valueOf(nuevoCosto));
+        insumoModificar.setNombreInsumo(nuevoNombre);
+        controladoraPersistencia.modificarInsumo(insumoModificar);
+    }
+
+    public Insumo buscarInsumoPorId(int id) {
+        return controladoraPersistencia.buscarInsumoPorId(id);
+    }
+
+    public void eliminarInsumoPorId(int id) {
+        controladoraPersistencia.eliminarInsumoPorId(id);
+    }
+
+    public List<Receta> listarRecetas() {
+     return controladoraPersistencia.listarRecetas();
+    }
+
+    
+    public void eliminarRecetaPorId(int id) {
+        controladoraPersistencia.eliminarRecetaPorId(id);
     }
 
 }
