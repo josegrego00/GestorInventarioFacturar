@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import logica.ControladoraLogica;
+import logica.Refrescar;
 
 public class InsumoForm extends JPanel {
 
@@ -20,8 +21,10 @@ public class InsumoForm extends JPanel {
 
     //controladora
     private ControladoraLogica controladoraLogica;
+    private Refrescar refrescar;
 
-    public InsumoForm() {
+    public InsumoForm(Refrescar refrescar) {
+        this.refrescar = refrescar;
         controladoraLogica = new ControladoraLogica();
         initComponents();
     }
@@ -142,9 +145,15 @@ public class InsumoForm extends JPanel {
 
             if (controladoraLogica.validarCampos(nombre, unidad, costoTexto, stockTexto)) {
                 controladoraLogica.crearInsumo(nombre, unidad, costoTexto, stockTexto);
+
                 JOptionPane.showMessageDialog(this, "✅ Todo los datos Validos, Se Guardo el insumo Correctamente");
                 limpiarCampos(); // opcional
+                // Recargar tabla
+                if (refrescar != null) {
+                    refrescar.refrescar();
+                }
             }
+
         }
         );
     }

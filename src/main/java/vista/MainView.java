@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import logica.Refrescar;
 import vista.inventario.GestionInsumoForm;
 import vista.inventario.GestionRecetaForm;
 
@@ -21,7 +22,7 @@ public class MainView extends JFrame {
     public MainView() {
         setTitle("Sistema de Gestión - Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700, 500);
+        setSize(1000, 500);
         setLocationRelativeTo(null);
 
         initComponents();
@@ -75,6 +76,7 @@ public class MainView extends JFrame {
         JButton btnInsumos = crearBotonSidebar("Insumos", "src/resources/insumos.png");
         btnInsumos.addActionListener(e -> {
             cardLayout.show(contentPane, "gestionInsumo");
+
             setTitle("Sistema de Gestión - Gesstion de Insumos");
         });
 
@@ -121,9 +123,6 @@ public class MainView extends JFrame {
         // Agregar Imdumo al contentPane
         contentPane.add(new JPanel(), "inicio"); // Panel vacío inicial
 
-        insumoForm = new vista.inventario.InsumoForm();
-        contentPane.add(insumoForm, "insumos");
-
         // Agregar componentes al mainPanel
         mainPanel.add(menuBar, BorderLayout.NORTH);
         mainPanel.add(sidebar, BorderLayout.WEST);
@@ -161,6 +160,7 @@ public class MainView extends JFrame {
         return boton;
     }
 
+
     public void mostrarModuloInsumos() {
         cardLayout.show(contentPane, "insumos");
         setTitle("Sistema de Gestión - Módulo de Insumos");
@@ -169,6 +169,13 @@ public class MainView extends JFrame {
     public void mostrarModuloRecetaForm() {
         cardLayout.show(contentPane, "recetas");
         setTitle("Sistema de Gestión - Crear o Editar Receta");
+    }
+
+    public void mostrarFormularioInsumo(Refrescar refrescar) {
+        vista.inventario.InsumoForm insumoForm = new vista.inventario.InsumoForm(refrescar);
+        contentPane.add(insumoForm, "insumoForm");
+        cardLayout.show(contentPane, "insumoForm");
+        setTitle("Sistema de Gestión - Crear Nuevo Insumo");
     }
 
     public static void main(String[] args) {

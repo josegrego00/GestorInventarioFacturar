@@ -14,6 +14,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import logica.ControladoraLogica;
 import logica.Insumo;
+import logica.Refrescar;
 import logica.Validacion;
 import vista.MainView;
 
@@ -21,7 +22,7 @@ import vista.MainView;
  *
  * @author josepino
  */
-public class GestionInsumoForm extends JPanel {
+public class GestionInsumoForm extends JPanel  implements Refrescar{
 
     private JTable tablaInsumos;
     private DefaultTableModel modeloTabla;
@@ -42,6 +43,7 @@ public class GestionInsumoForm extends JPanel {
     }
 
     private void initComponents() {
+    
         // Título
         JLabel lblTitulo = new JLabel("Gestión de Insumos");
         lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 24));
@@ -72,11 +74,11 @@ public class GestionInsumoForm extends JPanel {
         cardLayout = new CardLayout();
         contentPane = new JPanel(cardLayout);
 
-        insumoForm = new vista.inventario.InsumoForm();
+        insumoForm = new vista.inventario.InsumoForm(this);
         contentPane.add(insumoForm, "insumos");
 
         btnCrear.addActionListener(e -> {
-            mainView.mostrarModuloInsumos();
+            mainView.mostrarFormularioInsumo(this);
             cardLayout.show(contentPane, "insumo");
         });
 
@@ -94,7 +96,7 @@ public class GestionInsumoForm extends JPanel {
         add(panelBotones, BorderLayout.SOUTH);
     }
 
-    private void cargarInsumos() {
+    public void cargarInsumos() {
         modeloTabla.setRowCount(0); // Limpiar tabla
         List<Insumo> insumos = controladora.listarInsumos();
         for (Insumo insumo : insumos) {
@@ -180,5 +182,10 @@ public class GestionInsumoForm extends JPanel {
             JOptionPane.showMessageDialog(this, "Insumo eliminado completamente.");
             cargarInsumos();
         }
+    }
+
+    @Override
+    public void refrescar() {
+       cargarInsumos();
     }
 }

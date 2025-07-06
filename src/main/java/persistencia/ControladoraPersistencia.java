@@ -98,6 +98,10 @@ public class ControladoraPersistencia {
         }
     }
 
+    public List<RecetaDetalle> obtenerDetalleReceta() {
+        return recetaDetalleJpaController.findRecetaDetalleEntities();
+    }
+
    
 
 }

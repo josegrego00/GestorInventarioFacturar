@@ -8,6 +8,7 @@ import static java.awt.SystemColor.text;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -132,12 +133,23 @@ public class ControladoraLogica {
     }
 
     public List<Receta> listarRecetas() {
-     return controladoraPersistencia.listarRecetas();
+        return controladoraPersistencia.listarRecetas();
     }
 
-    
     public void eliminarRecetaPorId(int id) {
         controladoraPersistencia.eliminarRecetaPorId(id);
+    }
+
+    public List<RecetaDetalle> obtenerDetalleReceta(int idReceta) {
+        List<RecetaDetalle> listaDeRecetaPorId=new ArrayList<>();
+        List<RecetaDetalle> listaDeRecetas = controladoraPersistencia.obtenerDetalleReceta();
+        for (RecetaDetalle detalles: listaDeRecetas ) {
+            if (detalles.getIdReceta().getIdReceta().equals(idReceta)) {
+                listaDeRecetaPorId.add(detalles);
+            }
+        }
+        return listaDeRecetaPorId;
+
     }
 
 }

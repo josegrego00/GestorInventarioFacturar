@@ -16,10 +16,12 @@ vista/inventario/RecetaForm$1.class
 logica/Producto_.class
 vista/inventario/GestionInsumoForm.class
 vista/MainView.class
+vista/inventario/GestionRecetaForm$2.class
 logica/CategoriaProducto.class
 logica/RecetaDetalle.class
 vista/inventario/GestionRecetaForm$1.class
 vista/inventario/GestionInsumoForm$1.class
+logica/Refrescar.class
 logica/Producto.class
 logica/ControladoraLogica.class
 persistencia/ControladoraPersistencia.class
