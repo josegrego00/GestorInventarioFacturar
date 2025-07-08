@@ -7,7 +7,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import logica.Receta;
 import logica.ControladoraLogica;
+import logica.Insumo;
 import logica.RecetaDetalle;
+import logica.Refrescar;
 import vista.MainView;
 
 public class GestionRecetaForm extends JPanel {
@@ -98,8 +100,8 @@ public class GestionRecetaForm extends JPanel {
         contentPane.add(recetaForm, "gestionReceta");
 
         btnCrear.addActionListener(e -> {
-            recetaForm.recargarInsumos(); // si hace falta
-            mainView.mostrarModuloRecetaForm(); // Cambiamos de panel desde la vista principal
+            mainView.mostrarFormularioReceta(); // Cambiamos de panel desde la vista principal
+            cardLayout.show(contentPane, "gestionReceta");
         });
 
         tablaRecetas.getSelectionModel().addListSelectionListener(event -> {
@@ -213,4 +215,5 @@ public class GestionRecetaForm extends JPanel {
         lblIngredientes.setText("Ingredientes: " + ingredientes.size());
 
     }
+
 }

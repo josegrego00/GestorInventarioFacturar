@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import logica.ControladoraLogica;
+import logica.Refrescar;
 import logica.Validacion;
 
 public class RecetaForm extends JPanel {
@@ -25,8 +26,10 @@ public class RecetaForm extends JPanel {
     private JTextField txtCantidad, txtCosto;
 
     private ControladoraLogica controladoraLogica;
+    private Refrescar refrescar;
 
     public RecetaForm() {
+        this.refrescar=refrescar;
         controladoraLogica = new ControladoraLogica();
         setLayout(new BorderLayout());
         setBackground(new Color(0x003366)); // azul oscuro predominante
@@ -68,12 +71,11 @@ public class RecetaForm extends JPanel {
         JLabel lblInsumo = new JLabel("Insumo:");
         lblInsumo.setForeground(blanco);
 
-        
         // Aqui creo los insumos y esto hace que se actualicen 
         //      cuando se estan cambiando de panles
         comboInsumos = new JComboBox<>();
         recargarInsumos(); // este es el metodo q refresca los insumo
-        
+
         comboInsumos.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent fe) {
@@ -139,8 +141,6 @@ public class RecetaForm extends JPanel {
         scrollTabla.setPreferredSize(new Dimension(600, 150));
 
         // Botón guardar 
-        
-        
         btnGuardarReceta = new JButton("Guardar Receta");
         btnGuardarReceta.setBackground(negro);
         btnGuardarReceta.setForeground(blanco);
@@ -157,7 +157,7 @@ public class RecetaForm extends JPanel {
 
         add(panelInferior, BorderLayout.SOUTH);
     }
-
+private List<RecetaDetalle> detalles = new ArrayList<>();
     private void agregarInsumo(Insumo insumo) {
 
         if (!Validacion.esCostoValido(txtCantidad.getText())) {
@@ -174,7 +174,7 @@ public class RecetaForm extends JPanel {
         detalle.setIdInsumo(insumo);
         detalle.setCantidadInsumo(cantidad);
         detalle.setCostoInsumo(costoPorInsumo);
-
+        detalles.add(detalle);
         // Limpiar campos
         txtCantidad.setText("");
         txtCosto.setText("");
@@ -211,15 +211,14 @@ public class RecetaForm extends JPanel {
 
     }
 
-   public void recargarInsumos() {
-    
-       // se eliminan todos los Insumos para Cargarlos nuevamnete
-       
-    comboInsumos.removeAllItems(); // Limpia el combo actual
-    List<Insumo> listaInsumos = controladoraLogica.listarInsumos(); // Carga actualizada
-    for (Insumo insumo : listaInsumos) {
-        comboInsumos.addItem(insumo);
+    public void recargarInsumos() {
+
+        // se eliminan todos los Insumos para Cargarlos nuevamnete
+        comboInsumos.removeAllItems(); // Limpia el combo actual
+        List<Insumo> listaInsumos = controladoraLogica.listarInsumos(); // Carga actualizada
+        for (Insumo insumo : listaInsumos) {
+            comboInsumos.addItem(insumo);
+        }
     }
-}
 
 }

@@ -83,7 +83,6 @@ public class MainView extends JFrame {
         // Botones del sidebar
         JButton btnRecetas = crearBotonSidebar("Recetas", "src/resources/recetas.png");
         btnRecetas.addActionListener(e -> {
-            gestionRecetaForm.cargarRecetas(); // opcional si necesitas refrescar
             cardLayout.show(contentPane, "gestionReceta");
             setTitle("Sistema de Gestión - Módulo de Recetas");
         });
@@ -115,10 +114,6 @@ public class MainView extends JFrame {
 
         gestionRecetaForm = new vista.inventario.GestionRecetaForm(this);
         contentPane.add(gestionRecetaForm, "gestionReceta");
-
-        //Agregar Receta al ContentPAne
-        recetaForm = new vista.inventario.RecetaForm();
-        contentPane.add(recetaForm, "recetas");
 
         // Agregar Imdumo al contentPane
         contentPane.add(new JPanel(), "inicio"); // Panel vacío inicial
@@ -160,14 +155,13 @@ public class MainView extends JFrame {
         return boton;
     }
 
-
     public void mostrarModuloInsumos() {
         cardLayout.show(contentPane, "insumos");
         setTitle("Sistema de Gestión - Módulo de Insumos");
     }
 
     public void mostrarModuloRecetaForm() {
-        cardLayout.show(contentPane, "recetas");
+        cardLayout.show(contentPane, "receta");
         setTitle("Sistema de Gestión - Crear o Editar Receta");
     }
 
@@ -176,6 +170,15 @@ public class MainView extends JFrame {
         contentPane.add(insumoForm, "insumoForm");
         cardLayout.show(contentPane, "insumoForm");
         setTitle("Sistema de Gestión - Crear Nuevo Insumo");
+    }
+
+    public void mostrarFormularioReceta() {
+        vista.inventario.RecetaForm recetaForm = new vista.inventario.RecetaForm();
+        contentPane.add(recetaForm, "gestionReceta");
+        cardLayout.show(contentPane, "gestionReceta");
+        recetaForm.recargarInsumos();
+      
+        setTitle("Sistema de Gestión - Crear Nuevo Receta");
     }
 
     public static void main(String[] args) {
