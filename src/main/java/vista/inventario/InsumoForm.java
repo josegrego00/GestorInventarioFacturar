@@ -23,8 +23,13 @@ public class InsumoForm extends JPanel {
     private ControladoraLogica controladoraLogica;
     private Refrescar refrescar;
 
-    public InsumoForm(Refrescar refrescar) {
+    private CardLayout cardLayout;
+    private JPanel contenedor;
+
+    public InsumoForm(Refrescar refrescar, CardLayout cardLayout, JPanel contenedor) {
         this.refrescar = refrescar;
+        this.cardLayout=cardLayout;
+        this.contenedor=contenedor;
         controladoraLogica = new ControladoraLogica();
         initComponents();
     }
@@ -156,6 +161,10 @@ public class InsumoForm extends JPanel {
 
         }
         );
+        btnCancelar.addActionListener(e -> {
+             cardLayout.show(contenedor, "gestionInsumo"); 
+        });
+
     }
     // Getters para acceso externo
 

@@ -74,7 +74,7 @@ public class GestionInsumoForm extends JPanel  implements Refrescar{
         cardLayout = new CardLayout();
         contentPane = new JPanel(cardLayout);
 
-        insumoForm = new vista.inventario.InsumoForm(this);
+        insumoForm = new vista.inventario.InsumoForm(this, cardLayout, contentPane);
         contentPane.add(insumoForm, "insumos");
 
         btnCrear.addActionListener(e -> {

@@ -15,21 +15,28 @@ import java.util.List;
 import logica.ControladoraLogica;
 import logica.Refrescar;
 import logica.Validacion;
+import vista.MainView;
 
 public class RecetaForm extends JPanel {
 
     private JTextField txtNombreReceta;
     private JTable tablaInsumos;
     private DefaultTableModel modeloTabla;
-    private JButton btnAgregarInsumo, btnGuardarReceta;
+    private JButton btnAgregarInsumo, btnGuardarReceta, btnCancelar, btnEliminarInsumo;
     private JComboBox<Insumo> comboInsumos;
     private JTextField txtCantidad, txtCosto;
 
     private ControladoraLogica controladoraLogica;
     private Refrescar refrescar;
 
-    public RecetaForm() {
-        this.refrescar=refrescar;
+    private CardLayout cardLayout;
+    private JPanel contenedor;
+    private MainView mainView;
+
+    public RecetaForm(CardLayout cardLayout, JPanel contenedor, MainView mainView) {
+        this.cardLayout = cardLayout;
+        this.contenedor = contenedor;
+        this.mainView = mainView;
         controladoraLogica = new ControladoraLogica();
         setLayout(new BorderLayout());
         setBackground(new Color(0x003366)); // azul oscuro predominante
@@ -119,22 +126,37 @@ public class RecetaForm extends JPanel {
         gbc.gridx = 1;
         panelFormulario.add(txtCosto, gbc);
 
-        // Botón agregar insumo
+        // Estilos
         btnAgregarInsumo = new JButton("Agregar Insumo");
         btnAgregarInsumo.setBackground(negro);
         btnAgregarInsumo.setForeground(blanco);
 
+        btnEliminarInsumo = new JButton("Eliminar Insumo");
+        btnEliminarInsumo.setBackground(new Color(153, 0, 0)); // Rojo oscuro para "eliminar"
+        btnEliminarInsumo.setForeground(blanco);
+
+// Acción
         btnAgregarInsumo.addActionListener(e -> {
             txtNombreReceta.setEditable(false);
             Insumo insumo = (Insumo) comboInsumos.getSelectedItem();
             agregarInsumo(insumo);
         });
 
+// Panel para los botones (horizontal)
+        JPanel panelBotonesInsumo = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        panelBotonesInsumo.setBackground(panelFormulario.getBackground()); // mismo fondo
+        panelBotonesInsumo.add(btnAgregarInsumo);
+        panelBotonesInsumo.add(btnEliminarInsumo);
+
+// Posicionar en el formulario
         gbc.gridx = 1;
         gbc.gridy = 4;
-        panelFormulario.add(btnAgregarInsumo, gbc);
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        panelFormulario.add(panelBotonesInsumo, gbc);
+        
 
-        // Tabla de insumos agregados
+// Tabla de insumos agregados
         modeloTabla = new DefaultTableModel(new Object[]{"Insumo", "Cantidad", "Costo"}, 0);
         tablaInsumos = new JTable(modeloTabla);
         JScrollPane scrollTabla = new JScrollPane(tablaInsumos);
@@ -142,9 +164,17 @@ public class RecetaForm extends JPanel {
 
         // Botón guardar 
         btnGuardarReceta = new JButton("Guardar Receta");
+        btnCancelar = new JButton("Cancelar");
         btnGuardarReceta.setBackground(negro);
         btnGuardarReceta.setForeground(blanco);
+        btnCancelar.setBackground(negro);
+        btnCancelar.setForeground(blanco);
         btnGuardarReceta.addActionListener(e -> guardarReceta());
+
+        btnCancelar.addActionListener(e -> {
+            cardLayout.show(contenedor, "gestionReceta");
+            mainView.setTitle("Sistema de Gestión - Gestión de Recetas");
+        });
 
         // Agregar todo
         add(panelSuperior, BorderLayout.NORTH);
@@ -152,12 +182,24 @@ public class RecetaForm extends JPanel {
 
         JPanel panelInferior = new JPanel(new BorderLayout());
         panelInferior.setBackground(azul);
-        panelInferior.add(scrollTabla, BorderLayout.CENTER);
-        panelInferior.add(btnGuardarReceta, BorderLayout.SOUTH);
 
+// 1. Tabla con scroll en el centro
+        panelInferior.add(scrollTabla, BorderLayout.CENTER);
+
+// 2. Panel de botones abajo (sur)
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        panelBotones.setBackground(azul);
+        panelBotones.add(btnGuardarReceta);
+        panelBotones.add(btnCancelar);
+
+// 3. Agregar panel de botones al sur
+        panelInferior.add(panelBotones, BorderLayout.SOUTH);
+
+// 4. Agregar panelInferior al panel principal
         add(panelInferior, BorderLayout.SOUTH);
     }
-private List<RecetaDetalle> detalles = new ArrayList<>();
+    private List<RecetaDetalle> detalles = new ArrayList<>();
+
     private void agregarInsumo(Insumo insumo) {
 
         if (!Validacion.esCostoValido(txtCantidad.getText())) {
@@ -217,6 +259,13 @@ private List<RecetaDetalle> detalles = new ArrayList<>();
         comboInsumos.removeAllItems(); // Limpia el combo actual
         List<Insumo> listaInsumos = controladoraLogica.listarInsumos(); // Carga actualizada
         for (Insumo insumo : listaInsumos) {
+            comboInsumos.addItem(insumo);
+        }
+    }
+
+    public void actualizarComboInsumos(List<Insumo> insumosActualizados) {
+        comboInsumos.removeAllItems(); // Limpia el combo actual
+        for (Insumo insumo : insumosActualizados) {
             comboInsumos.addItem(insumo);
         }
     }

@@ -131,8 +131,10 @@ public class MainView extends JFrame {
         statusPanel.add(statusLabel);
 
         mainPanel.add(statusPanel, BorderLayout.SOUTH);
+        cardLayout.show(contentPane, "inicio");
 
         add(mainPanel);
+
     }
 
     private JButton crearBotonSidebar(String texto, String iconPath) {
@@ -166,16 +168,16 @@ public class MainView extends JFrame {
     }
 
     public void mostrarFormularioInsumo(Refrescar refrescar) {
-        vista.inventario.InsumoForm insumoForm = new vista.inventario.InsumoForm(refrescar);
+        vista.inventario.InsumoForm insumoForm = new vista.inventario.InsumoForm(refrescar, cardLayout, contentPane);
         contentPane.add(insumoForm, "insumoForm");
         cardLayout.show(contentPane, "insumoForm");
         setTitle("Sistema de Gestión - Crear Nuevo Insumo");
     }
 
     public void mostrarFormularioReceta() {
-        vista.inventario.RecetaForm recetaForm = new vista.inventario.RecetaForm();
-        contentPane.add(recetaForm, "gestionReceta");
-        cardLayout.show(contentPane, "gestionReceta");
+        vista.inventario.RecetaForm recetaForm = new vista.inventario.RecetaForm(cardLayout, contentPane, this);
+        contentPane.add(recetaForm, "gestionRecetaC");
+        cardLayout.show(contentPane, "gestionRecetaC");
         recetaForm.recargarInsumos();
       
         setTitle("Sistema de Gestión - Crear Nuevo Receta");

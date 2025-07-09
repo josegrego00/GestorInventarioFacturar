@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import logica.Receta;
 import logica.ControladoraLogica;
@@ -12,11 +13,11 @@ import logica.RecetaDetalle;
 import logica.Refrescar;
 import vista.MainView;
 
-public class GestionRecetaForm extends JPanel {
+public class GestionRecetaForm extends JPanel implements Refrescar {
 
     private JTable tablaRecetas;
     private DefaultTableModel modeloTabla;
-    private ControladoraLogica controladora;
+    private ControladoraLogica controladoraLogica;
 
     private RecetaForm recetaForm;
     private JPanel contentPane;
@@ -30,7 +31,7 @@ public class GestionRecetaForm extends JPanel {
 
     public GestionRecetaForm(MainView mainView) {
         this.mainView = mainView;
-        controladora = new ControladoraLogica();
+        controladoraLogica = new ControladoraLogica();
         setLayout(new BorderLayout());
         setBackground(new Color(0x003366)); // Azul oscuro
         initComponents();
@@ -96,10 +97,11 @@ public class GestionRecetaForm extends JPanel {
         cardLayout = new CardLayout();
         contentPane = new JPanel(cardLayout);
 
-        recetaForm = new vista.inventario.RecetaForm();
+        recetaForm = new vista.inventario.RecetaForm(cardLayout, contentPane, mainView );
         contentPane.add(recetaForm, "gestionReceta");
 
         btnCrear.addActionListener(e -> {
+            refrescar();
             mainView.mostrarFormularioReceta(); // Cambiamos de panel desde la vista principal
             cardLayout.show(contentPane, "gestionReceta");
         });
@@ -122,7 +124,7 @@ public class GestionRecetaForm extends JPanel {
 
     public void cargarRecetas() {
         modeloTabla.setRowCount(0);
-        List<Receta> recetas = controladora.listarRecetas(); // Asegúrate de tener este método
+        List<Receta> recetas = controladoraLogica.listarRecetas(); // Asegúrate de tener este método
         for (Receta receta : recetas) {
             modeloTabla.addRow(new Object[]{
                 receta.getIdReceta(),
@@ -182,7 +184,7 @@ public class GestionRecetaForm extends JPanel {
                 JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            controladora.eliminarRecetaPorId(id);
+            controladoraLogica.eliminarRecetaPorId(id);
             JOptionPane.showMessageDialog(this, "Receta eliminada correctamente.");
             cargarRecetas();
         }
@@ -201,7 +203,7 @@ public class GestionRecetaForm extends JPanel {
         lblNombre.setText("Nombre Receta: " + nombre);
         lblPrecio.setText("Precio Receta: $" + precio);
 
-        List<RecetaDetalle> ingredientes = controladora.obtenerDetalleReceta(idReceta);
+        List<RecetaDetalle> ingredientes = controladoraLogica.obtenerDetalleReceta(idReceta);
 
         modeloIngredientes.setRowCount(0); // Limpia tabla antes de cargar nuevos datos
 
@@ -214,6 +216,16 @@ public class GestionRecetaForm extends JPanel {
         }
         lblIngredientes.setText("Ingredientes: " + ingredientes.size());
 
+    }
+
+    @Override
+    public void refrescar() {
+        List<Insumo> insumosActualizados = recargarInsumos();
+        recetaForm.actualizarComboInsumos(insumosActualizados); 
+    }
+
+    private List<Insumo> recargarInsumos() {
+        return controladoraLogica.listarInsumos();
     }
 
 }
