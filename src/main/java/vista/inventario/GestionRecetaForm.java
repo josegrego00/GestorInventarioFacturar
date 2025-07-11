@@ -97,13 +97,14 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
         cardLayout = new CardLayout();
         contentPane = new JPanel(cardLayout);
 
-        recetaForm = new vista.inventario.RecetaForm(cardLayout, contentPane, mainView );
+        recetaForm = new vista.inventario.RecetaForm(cardLayout, contentPane, mainView, this);
         contentPane.add(recetaForm, "gestionReceta");
 
         btnCrear.addActionListener(e -> {
             refrescar();
             mainView.mostrarFormularioReceta(); // Cambiamos de panel desde la vista principal
             cardLayout.show(contentPane, "gestionReceta");
+    
         });
 
         tablaRecetas.getSelectionModel().addListSelectionListener(event -> {
@@ -129,16 +130,13 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
             modeloTabla.addRow(new Object[]{
                 receta.getIdReceta(),
                 receta.getNombreReceta(),
-                receta.getCostoReceta()
+                receta.getCostoReceta()                    
             });
+            System.out.println("id de la receta "+ receta.getIdReceta());
+             System.out.println("nombre de la receta "+ receta.getNombreReceta());
+              System.out.println("valor de la receta "+ receta.getCostoReceta());
         }
     }
-
-    private void crearReceta() {
-        // Puedes crear un formulario similar a InsumoForm
-        JOptionPane.showMessageDialog(this, "Abrir formulario para crear receta.");
-    }
-
     private void editarReceta() {
         int fila = tablaRecetas.getSelectedRow();
         if (fila == -1) {
@@ -166,7 +164,7 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
             // Puedes validar aquí si lo deseas
             //controladora.actualizarReceta(id, nuevoNombre, nuevaDescripcion);
             JOptionPane.showMessageDialog(this, "Receta actualizada exitosamente.");
-            cargarRecetas();
+            
         }
     }
 
@@ -222,6 +220,7 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
     public void refrescar() {
         List<Insumo> insumosActualizados = recargarInsumos();
         recetaForm.actualizarComboInsumos(insumosActualizados); 
+        
     }
 
     private List<Insumo> recargarInsumos() {

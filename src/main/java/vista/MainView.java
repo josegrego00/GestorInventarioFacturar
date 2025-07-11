@@ -20,6 +20,9 @@ public class MainView extends JFrame {
     private vista.inventario.GestionRecetaForm gestionRecetaForm;
 
     public MainView() {
+
+        gestionRecetaForm = new vista.inventario.GestionRecetaForm(this);
+
         setTitle("Sistema de Gestión - Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 500);
@@ -29,6 +32,7 @@ public class MainView extends JFrame {
     }
 
     private void initComponents() {
+
         // Configuración de colores
         Color azulOscuro = new Color(0, 51, 102);
         Color azulClaro = new Color(173, 216, 230);
@@ -85,6 +89,7 @@ public class MainView extends JFrame {
         btnRecetas.addActionListener(e -> {
             cardLayout.show(contentPane, "gestionReceta");
             setTitle("Sistema de Gestión - Módulo de Recetas");
+            System.out.println("precione aqui");
         });
 
         sidebar.add(btnRecetas);
@@ -175,11 +180,11 @@ public class MainView extends JFrame {
     }
 
     public void mostrarFormularioReceta() {
-        vista.inventario.RecetaForm recetaForm = new vista.inventario.RecetaForm(cardLayout, contentPane, this);
+        vista.inventario.RecetaForm recetaForm = new vista.inventario.RecetaForm(cardLayout, contentPane, this, gestionRecetaForm);
         contentPane.add(recetaForm, "gestionRecetaC");
         cardLayout.show(contentPane, "gestionRecetaC");
         recetaForm.recargarInsumos();
-      
+
         setTitle("Sistema de Gestión - Crear Nuevo Receta");
     }
 

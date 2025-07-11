@@ -7,7 +7,7 @@ import javax.persistence.metamodel.StaticMetamodel;
 import logica.Insumo;
 import logica.Receta;
 
-@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2025-07-08T20:57:49", comments="EclipseLink-2.7.10.v20211216-rNA")
+@Generated(value="org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor", date="2025-07-11T11:11:52", comments="EclipseLink-2.7.10.v20211216-rNA")
 @StaticMetamodel(RecetaDetalle.class)
 public class RecetaDetalle_ { 
 

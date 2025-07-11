@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
+import javax.persistence.EntityTransaction;
 import javax.persistence.ParameterMode;
 import javax.persistence.Persistence;
 import javax.persistence.StoredProcedureQuery;
@@ -203,8 +204,10 @@ public class RecetaDetalleJpaController implements Serializable {
 
     public void insertarDetalleRecetaConSP(int idReceta, int idInsumo, BigDecimal cantidadInsumo) {
         EntityManager em = emf.createEntityManager(); // Asegurate de tener 'emf' definido como EntityManagerFactory
+        EntityTransaction tx = em.getTransaction();
 
         try {
+              tx.begin(); 
             StoredProcedureQuery query = em.createStoredProcedureQuery("insertar_receta_detalle");
 
             query.registerStoredProcedureParameter("p_id_receta", Integer.class, ParameterMode.IN);
@@ -216,8 +219,14 @@ public class RecetaDetalleJpaController implements Serializable {
             query.setParameter("p_cantidad_insumo", cantidadInsumo);
 
             query.execute();
+            
+            tx.commit();
+             
 
         } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback(); // 🛑 Revertir si hay error
+            }
             System.err.println("Error al ejecutar el procedimiento almacenado: " + e.getMessage());
             throw e; // o manejalo como prefieras
         } finally {

@@ -33,7 +33,11 @@ public class RecetaForm extends JPanel {
     private JPanel contenedor;
     private MainView mainView;
 
-    public RecetaForm(CardLayout cardLayout, JPanel contenedor, MainView mainView) {
+    private GestionRecetaForm gestionRecetaForm;
+
+    public RecetaForm(CardLayout cardLayout, JPanel contenedor, MainView mainView, Refrescar refrescar) {
+        this.gestionRecetaForm = (GestionRecetaForm) refrescar;
+        this.refrescar = refrescar;
         this.cardLayout = cardLayout;
         this.contenedor = contenedor;
         this.mainView = mainView;
@@ -154,7 +158,6 @@ public class RecetaForm extends JPanel {
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.WEST;
         panelFormulario.add(panelBotonesInsumo, gbc);
-        
 
 // Tabla de insumos agregados
         modeloTabla = new DefaultTableModel(new Object[]{"Insumo", "Cantidad", "Costo"}, 0);
@@ -244,12 +247,19 @@ public class RecetaForm extends JPanel {
         controladoraLogica.crearReceta(nombre);
         controladoraLogica.agregarDetalleReceta(modeloTabla, nombre);
         JOptionPane.showMessageDialog(this, "Receta guardada exitosamente");
-
+        modeloTabla.setRowCount(0);
         // Esto es para Vaciar Luego de Crear la receta y crear el detalle de la receta
         txtNombreReceta.setText("");
         for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
             modeloTabla.removeRow(i);
         }
+
+        if (refrescar != null) {
+            refrescar.refrescar();
+        }
+        
+
+        cardLayout.show(contenedor, "gestionReceta");
 
     }
 
