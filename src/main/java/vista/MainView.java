@@ -21,8 +21,6 @@ public class MainView extends JFrame {
 
     public MainView() {
 
-        gestionRecetaForm = new vista.inventario.GestionRecetaForm(this);
-
         setTitle("Sistema de Gestión - Principal");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1000, 500);
@@ -79,17 +77,21 @@ public class MainView extends JFrame {
         // Botones del sidebar
         JButton btnInsumos = crearBotonSidebar("Insumos", "src/resources/insumos.png");
         btnInsumos.addActionListener(e -> {
+            gestionInsumoForm = new vista.inventario.GestionInsumoForm(this);
+            contentPane.add(gestionInsumoForm, "gestionInsumo");
             cardLayout.show(contentPane, "gestionInsumo");
-
             setTitle("Sistema de Gestión - Gesstion de Insumos");
         });
 
         // Botones del sidebar
         JButton btnRecetas = crearBotonSidebar("Recetas", "src/resources/recetas.png");
         btnRecetas.addActionListener(e -> {
+            gestionRecetaForm = new vista.inventario.GestionRecetaForm(this);
+            //gestionRecetaForm.refrescar();
+            contentPane.add(gestionRecetaForm, "gestionReceta");
             cardLayout.show(contentPane, "gestionReceta");
             setTitle("Sistema de Gestión - Módulo de Recetas");
-            System.out.println("precione aqui");
+
         });
 
         sidebar.add(btnRecetas);
@@ -114,12 +116,6 @@ public class MainView extends JFrame {
 
         // Inicializar módulos
         // aqui es donde Cargo los Modulos al Menu Principal
-        gestionInsumoForm = new vista.inventario.GestionInsumoForm(this);
-        contentPane.add(gestionInsumoForm, "gestionInsumo");
-
-        gestionRecetaForm = new vista.inventario.GestionRecetaForm(this);
-        contentPane.add(gestionRecetaForm, "gestionReceta");
-
         // Agregar Imdumo al contentPane
         contentPane.add(new JPanel(), "inicio"); // Panel vacío inicial
 

@@ -31,9 +31,9 @@ public class RecetaJpaController implements Serializable {
     }
 
     public RecetaJpaController() {
-    this.emf=Persistence.createEntityManagerFactory("persistenciaPU");
+        this.emf = Persistence.createEntityManagerFactory("persistenciaPU");
     }
-    
+
     private EntityManagerFactory emf = null;
 
     public EntityManager getEntityManager() {
@@ -254,16 +254,16 @@ public class RecetaJpaController implements Serializable {
             em.close();
         }
     }
- public Receta buscarRecetaPorNombre(String nombre) {
+
+    public Receta buscarRecetaPorNombre(String nombre) {
         EntityManager em = getEntityManager();
         try {
             // Usamos JPQL con parámetro nombrado para evitar SQL injection
             Query query = em.createQuery("SELECT r FROM Receta r WHERE r.nombreReceta= :nombre");
             query.setParameter("nombre", nombre);
-
             // Obtenemos el resultado único (o null si no existe)
             try {
-                return (Receta) query.getSingleResult();
+                return (Receta) query.setHint("javax.persistence.cache.storeMode", "REFRESH").getSingleResult();
             } catch (javax.persistence.NoResultException e) {
                 return null; // No se encontró ningúna Receta con ese nombre
             }
@@ -272,5 +272,5 @@ public class RecetaJpaController implements Serializable {
         }
 
     }
-        
+
 }

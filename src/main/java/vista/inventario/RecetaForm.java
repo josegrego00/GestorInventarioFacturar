@@ -12,6 +12,8 @@ import java.awt.event.FocusListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import logica.ControladoraLogica;
 import logica.Refrescar;
 import logica.Validacion;
@@ -246,20 +248,23 @@ public class RecetaForm extends JPanel {
         // Si pasa ambas validaciones, se guarda la receta y el detalle de la misma
         controladoraLogica.crearReceta(nombre);
         controladoraLogica.agregarDetalleReceta(modeloTabla, nombre);
+        Receta r = controladoraLogica.buscarReceta(nombre);
+        try {
+            Thread.sleep(300); // 300ms
+        } catch (InterruptedException ex) {
+            Logger.getLogger(RecetaForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.out.println("Costo actualizado: " + r.getCostoReceta());
         JOptionPane.showMessageDialog(this, "Receta guardada exitosamente");
         modeloTabla.setRowCount(0);
         // Esto es para Vaciar Luego de Crear la receta y crear el detalle de la receta
         txtNombreReceta.setText("");
-        for (int i = modeloTabla.getRowCount() - 1; i >= 0; i--) {
-            modeloTabla.removeRow(i);
-        }
 
         if (refrescar != null) {
             refrescar.refrescar();
         }
-        
 
-        cardLayout.show(contenedor, "gestionReceta");
+        cardLayout.show(contenedor, "inicio");
 
     }
 

@@ -109,7 +109,7 @@ public class ControladoraLogica {
         return modeloTabla.getRowCount() == 0;
     }
 
-    private Receta buscarReceta(String nombreReceta) {
+    public Receta buscarReceta(String nombreReceta) {
         return controladoraPersistencia.buscarReceta(nombreReceta);
     }
 
