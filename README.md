@@ -20,4 +20,4 @@
 ![Recetas](./Imagenes/receta2.png)
 
 ### Se Creo el Modulo de Gestion de Receta
-![Recetas](./Imagenes/gestionReceta.png)
+![Recetas](./Imagenes/ModuloReceta.png)
