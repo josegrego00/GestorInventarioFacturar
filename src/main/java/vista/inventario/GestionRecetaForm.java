@@ -104,7 +104,7 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
             refrescar();
             mainView.mostrarFormularioReceta(); // Cambiamos de panel desde la vista principal
             cardLayout.show(contentPane, "gestionReceta");
-    
+
         });
 
         tablaRecetas.getSelectionModel().addListSelectionListener(event -> {
@@ -113,7 +113,12 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
             }
         });
 
-        btnEditar.addActionListener(e -> editarReceta());
+        btnEditar.addActionListener(e -> {
+            editarReceta();
+            //refrescar();
+            //mainView.mostrarFormularioReceta(); // Cambiamos de panel desde la vista principal
+
+        });
         btnEliminar.addActionListener(e -> eliminarReceta());
 
         panelBotones.add(btnCrear);
@@ -130,13 +135,14 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
             modeloTabla.addRow(new Object[]{
                 receta.getIdReceta(),
                 receta.getNombreReceta(),
-                receta.getCostoReceta()                    
+                receta.getCostoReceta()
             });
-            System.out.println("id de la receta "+ receta.getIdReceta());
-             System.out.println("nombre de la receta "+ receta.getNombreReceta());
-              System.out.println("valor de la receta "+ receta.getCostoReceta());
+            System.out.println("id de la receta " + receta.getIdReceta());
+            System.out.println("nombre de la receta " + receta.getNombreReceta());
+            System.out.println("valor de la receta " + receta.getCostoReceta());
         }
     }
+
     private void editarReceta() {
         int fila = tablaRecetas.getSelectedRow();
         if (fila == -1) {
@@ -145,26 +151,18 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
         }
 
         int id = (int) modeloTabla.getValueAt(fila, 0);
-        String nombreActual = (String) modeloTabla.getValueAt(fila, 1);
-        String descripcionActual = (String) modeloTabla.getValueAt(fila, 2);
+        
 
-        JTextField campoNombre = new JTextField(nombreActual);
-        JTextField campoDescripcion = new JTextField(descripcionActual);
+        Receta recetaSeleccionada = controladoraLogica.buscarRecetaPorId(id); // asegúrate de tener este método
+        List<RecetaDetalle> detalles = controladoraLogica.obtenerDetalleReceta(id);
 
-        Object[] campos = {
-            "Nuevo Nombre:", campoNombre,
-            "Nueva Descripción:", campoDescripcion
-        };
-
-        int opcion = JOptionPane.showConfirmDialog(this, campos, "Editar Receta", JOptionPane.OK_CANCEL_OPTION);
+        int opcion = JOptionPane.showConfirmDialog(this, "Desea Editar esta Receta?", "Editar Receta", JOptionPane.OK_CANCEL_OPTION);
         if (opcion == JOptionPane.OK_OPTION) {
-            String nuevoNombre = campoNombre.getText().trim();
-            String nuevaDescripcion = campoDescripcion.getText().trim();
+            recetaForm.cargarRecetaParaEditar(recetaSeleccionada, detalles);
+            // Mostrar el formulario
+            mainView.mostrarFormularioReceta();
+            cardLayout.show(contentPane, "gestionReceta");
 
-            // Puedes validar aquí si lo deseas
-            //controladora.actualizarReceta(id, nuevoNombre, nuevaDescripcion);
-            JOptionPane.showMessageDialog(this, "Receta actualizada exitosamente.");
-            
         }
     }
 
@@ -219,8 +217,8 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
     @Override
     public void refrescar() {
         List<Insumo> insumosActualizados = recargarInsumos();
-        recetaForm.actualizarComboInsumos(insumosActualizados); 
-        
+        recetaForm.actualizarComboInsumos(insumosActualizados);
+
     }
 
     private List<Insumo> recargarInsumos() {

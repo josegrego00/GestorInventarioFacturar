@@ -7,6 +7,8 @@ import logica.Receta;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.math.BigDecimal;
@@ -20,6 +22,9 @@ import logica.Validacion;
 import vista.MainView;
 
 public class RecetaForm extends JPanel {
+
+    private boolean modoEdicion = false;
+    private Receta recetaOriginal = null;
 
     private JTextField txtNombreReceta;
     private JTable tablaInsumos;
@@ -174,7 +179,15 @@ public class RecetaForm extends JPanel {
         btnGuardarReceta.setForeground(blanco);
         btnCancelar.setBackground(negro);
         btnCancelar.setForeground(blanco);
-        btnGuardarReceta.addActionListener(e -> guardarReceta());
+        btnGuardarReceta.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (modoEdicion) {
+                    actualizarReceta();
+                } else {
+                    guardarReceta();
+                }
+            }
+        });
 
         btnCancelar.addActionListener(e -> {
             cardLayout.show(contenedor, "gestionReceta");
@@ -284,5 +297,54 @@ public class RecetaForm extends JPanel {
             comboInsumos.addItem(insumo);
         }
     }
+
+    public void cargarRecetaParaEditar(Receta receta, List<RecetaDetalle> detalles) {
+
+        this.recetaOriginal = receta;
+        this.modoEdicion = true;
+
+        txtNombreReceta.setText(receta.getNombreReceta());
+
+        // Si tienes otros campos como descripción, precio, etc., también los cargas aquí
+        // txtDescripcion.setText(receta.getDescripcion());
+        // Limpiar tabla de ingredientes actual
+        modeloTabla.setRowCount(0);
+
+        // Cargar los ingredientes desde detalles
+        for (RecetaDetalle detalle : detalles) {
+            Insumo insumo = detalle.getIdInsumo();
+            modeloTabla.addRow(new Object[]{
+                insumo.getNombreInsumo(),
+                detalle.getCantidadInsumo(),
+                detalle.getCostoInsumo()
+            });
+        }
+
+        // Si manejas modo edición, puedes guardar el ID de la receta como atributo
+        btnGuardarReceta.setText("Actualizar Receta");
+    }
+
+    private void actualizarReceta() {
+    String nuevoNombre = txtNombreReceta.getText().trim();
+    
+    List<Insumo> insumos = obtenerInsumosDesdeTabla();
+
+    // Verifica si el nombre cambió
+    if (!nuevoNombre.equalsIgnoreCase(recetaOriginal.getNombre())) {
+        if (Repositorio.recetaYaExiste(nuevoNombre)) {
+            JOptionPane.showMessageDialog(this, "Ya existe una receta con ese nombre.");
+            return;
+        }
+        recetaOriginal.setNombre(nuevoNombre);
+    }
+
+    recetaOriginal.setProcedimiento(procedimiento);
+    recetaOriginal.setInsumos(insumos);
+
+    Repositorio.actualizarReceta(recetaOriginal);
+    JOptionPane.showMessageDialog(this, "Receta actualizada correctamente.");
+    
+    this.dispose(); // o volver a la pantalla anterior
+}
 
 }

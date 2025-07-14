@@ -152,4 +152,8 @@ public class ControladoraLogica {
 
     }
 
+    public Receta buscarRecetaPorId(int id) {
+        return controladoraPersistencia.buscarRecetaPorId(id);
+    }
+
 }

@@ -61,7 +61,7 @@ public class ControladoraPersistencia {
     }
 
     public Insumo buscarInsumoPorId(int id) {
-          return insumoJpaController.findInsumo(id);
+        return insumoJpaController.findInsumo(id);
     }
 
     public void modificarInsumo(Insumo insumoModificar) {
@@ -102,6 +102,8 @@ public class ControladoraPersistencia {
         return recetaDetalleJpaController.findRecetaDetalleEntities();
     }
 
-   
+    public Receta buscarRecetaPorId(int id) {
+        return recetaJpaController.findReceta(id);
+    }
 
 }
