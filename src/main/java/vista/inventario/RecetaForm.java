@@ -182,7 +182,7 @@ public class RecetaForm extends JPanel {
         btnGuardarReceta.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 if (modoEdicion) {
-                    actualizarReceta();
+                   // actualizarReceta();
                 } else {
                     guardarReceta();
                 }
@@ -267,7 +267,7 @@ public class RecetaForm extends JPanel {
         } catch (InterruptedException ex) {
             Logger.getLogger(RecetaForm.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Costo actualizado: " + r.getCostoReceta());
+        
         JOptionPane.showMessageDialog(this, "Receta guardada exitosamente");
         modeloTabla.setRowCount(0);
         // Esto es para Vaciar Luego de Crear la receta y crear el detalle de la receta
@@ -300,6 +300,8 @@ public class RecetaForm extends JPanel {
 
     public void cargarRecetaParaEditar(Receta receta, List<RecetaDetalle> detalles) {
 
+        txtNombreReceta.setEditable(true);
+        
         this.recetaOriginal = receta;
         this.modoEdicion = true;
 
@@ -318,12 +320,15 @@ public class RecetaForm extends JPanel {
                 detalle.getCantidadInsumo(),
                 detalle.getCostoInsumo()
             });
+            System.out.println("nombre"+insumo.getNombreInsumo());
+            System.out.println("cantidad"+detalle.getCantidadInsumo());
+            System.out.println("costo"+detalle.getCostoInsumo());
         }
 
         // Si manejas modo edición, puedes guardar el ID de la receta como atributo
-        btnGuardarReceta.setText("Actualizar Receta");
+        //btnGuardarReceta.setText("Actualizar Receta");
     }
-
+/*
     private void actualizarReceta() {
     String nuevoNombre = txtNombreReceta.getText().trim();
     
@@ -345,6 +350,6 @@ public class RecetaForm extends JPanel {
     JOptionPane.showMessageDialog(this, "Receta actualizada correctamente.");
     
     this.dispose(); // o volver a la pantalla anterior
-}
+}*/
 
 }

@@ -4,8 +4,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
+
 import logica.Receta;
 import logica.ControladoraLogica;
 import logica.Insumo;
@@ -15,40 +15,52 @@ import vista.MainView;
 
 public class GestionRecetaForm extends JPanel implements Refrescar {
 
+    // === Atributos ===
     private JTable tablaRecetas;
     private DefaultTableModel modeloTabla;
-    private ControladoraLogica controladoraLogica;
 
-    private RecetaForm recetaForm;
-    private JPanel contentPane;
-    private CardLayout cardLayout;
-    private MainView mainView;
-
-    private JPanel panelDetalle;
     private JTable tablaIngredientes;
     private DefaultTableModel modeloIngredientes;
-    private JLabel lblNombre, lblPrecio, lblIngredientes;
 
+    private JLabel lblNombre, lblPrecio, lblIngredientes;
+    private JPanel panelDetalle;
+
+    private JPanel contentPane;
+    private CardLayout cardLayout;
+
+    private RecetaForm recetaForm;
+    private ControladoraLogica controladoraLogica;
+    private MainView mainView;
+
+    // === Constructor ===
     public GestionRecetaForm(MainView mainView) {
         this.mainView = mainView;
-        controladoraLogica = new ControladoraLogica();
+        this.controladoraLogica = new ControladoraLogica();
+
         setLayout(new BorderLayout());
         setBackground(new Color(0x003366)); // Azul oscuro
+
         initComponents();
         cargarRecetas();
     }
 
+    // === Inicialización de Componentes ===
     private void initComponents() {
+        // Título superior
         JLabel lblTitulo = new JLabel("Gestión de Recetas");
         lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
         add(lblTitulo, BorderLayout.NORTH);
 
-        // aqui es donde van los detalles de las recetas
+        // Panel derecho: detalles de receta
         panelDetalle = new JPanel();
         panelDetalle.setLayout(new BoxLayout(panelDetalle, BoxLayout.Y_AXIS));
         panelDetalle.setBackground(new Color(0xE6F0FA)); // Azul claro
+
+        lblNombre = new JLabel("Nombre: ");
+        lblPrecio = new JLabel("Precio: ");
+        lblIngredientes = new JLabel("Ingredientes: ");
 
         modeloIngredientes = new DefaultTableModel(new Object[]{"Insumo", "Cantidad", "Costo"}, 0) {
             @Override
@@ -56,20 +68,18 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
                 return false;
             }
         };
-        lblNombre = new JLabel("Nombre: ");
-        lblPrecio = new JLabel("Precio: ");
-        lblIngredientes = new JLabel("Ingredientes: ");
+
         tablaIngredientes = new JTable(modeloIngredientes);
         tablaIngredientes.setFont(new Font("SansSerif", Font.PLAIN, 14));
         tablaIngredientes.setRowHeight(22);
         tablaIngredientes.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 14));
 
         panelDetalle.add(new JScrollPane(tablaIngredientes));
-
         panelDetalle.add(lblNombre);
         panelDetalle.add(lblPrecio);
         panelDetalle.add(lblIngredientes);
 
+        // Panel izquierdo: lista de recetas
         modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Precio Receta"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -78,15 +88,20 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
         };
 
         tablaRecetas = new JTable(modeloTabla);
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setDividerLocation(150);
+        tablaRecetas.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
+                mostrarDetalleRecetaSeleccionada();
+            }
+        });
 
+        // División entre tabla y detalle
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         splitPane.setDividerLocation(550); // ancho para la tabla
         splitPane.setLeftComponent(new JScrollPane(tablaRecetas));
         splitPane.setRightComponent(panelDetalle);
-
         add(splitPane, BorderLayout.CENTER);
 
+        // Panel de botones inferiores
         JPanel panelBotones = new JPanel();
         panelBotones.setBackground(new Color(0x003366));
 
@@ -94,43 +109,33 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
         JButton btnEditar = new JButton("Editar");
         JButton btnEliminar = new JButton("Eliminar");
 
-        cardLayout = new CardLayout();
-        contentPane = new JPanel(cardLayout);
-
-        recetaForm = new vista.inventario.RecetaForm(cardLayout, contentPane, mainView, this);
-        contentPane.add(recetaForm, "gestionReceta");
-
-        btnCrear.addActionListener(e -> {
-            refrescar();
-            mainView.mostrarFormularioReceta(); // Cambiamos de panel desde la vista principal
-            cardLayout.show(contentPane, "gestionReceta");
-
-        });
-
-        tablaRecetas.getSelectionModel().addListSelectionListener(event -> {
-            if (!event.getValueIsAdjusting()) {
-                mostrarDetalleRecetaSeleccionada();
-            }
-        });
-
-        btnEditar.addActionListener(e -> {
-            editarReceta();
-            //refrescar();
-            //mainView.mostrarFormularioReceta(); // Cambiamos de panel desde la vista principal
-
-        });
-        btnEliminar.addActionListener(e -> eliminarReceta());
-
         panelBotones.add(btnCrear);
         panelBotones.add(btnEditar);
         panelBotones.add(btnEliminar);
-
         add(panelBotones, BorderLayout.SOUTH);
+
+        // Panel de navegación con CardLayout
+        cardLayout = new CardLayout();
+        contentPane = new JPanel(cardLayout);
+        recetaForm = new RecetaForm(cardLayout, contentPane, mainView, this);
+        contentPane.add(recetaForm, "gestionReceta");
+
+        // Eventos de botones
+        btnCrear.addActionListener(e -> {
+            refrescar();
+            mainView.mostrarFormularioReceta();
+            cardLayout.show(contentPane, "gestionReceta");
+        });
+
+        btnEditar.addActionListener(e -> editarReceta());
+        btnEliminar.addActionListener(e -> eliminarReceta());
     }
 
+    // === Cargar recetas desde lógica ===
     public void cargarRecetas() {
         modeloTabla.setRowCount(0);
-        List<Receta> recetas = controladoraLogica.listarRecetas(); // Asegúrate de tener este método
+        List<Receta> recetas = controladoraLogica.listarRecetas();
+
         for (Receta receta : recetas) {
             modeloTabla.addRow(new Object[]{
                 receta.getIdReceta(),
@@ -143,6 +148,36 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
         }
     }
 
+    // === Mostrar detalle de receta seleccionada ===
+    private void mostrarDetalleRecetaSeleccionada() {
+        int fila = tablaRecetas.getSelectedRow();
+        if (fila == -1) return;
+
+        int idReceta = (int) modeloTabla.getValueAt(fila, 0);
+        String nombre = (String) modeloTabla.getValueAt(fila, 1);
+        BigDecimal precio = (BigDecimal) modeloTabla.getValueAt(fila, 2);
+
+        lblNombre.setText("Nombre Receta: " + nombre);
+        lblPrecio.setText("Precio Receta: $" + precio);
+
+        List<RecetaDetalle> ingredientes = controladoraLogica.obtenerDetalleReceta(idReceta);
+        modeloIngredientes.setRowCount(0);
+
+        for (RecetaDetalle ing : ingredientes) {
+            modeloIngredientes.addRow(new Object[]{
+                ing.getIdInsumo().getNombreInsumo(),
+                ing.getCantidadInsumo().toPlainString(),
+                "$" + ing.getCostoInsumo().toPlainString()
+            });
+        }
+
+        lblIngredientes.setText("Ingredientes: " + ingredientes.size());
+        System.out.println("Cargando detalle de receta: " + nombre + " con " + ingredientes.size() + " ingredientes.");
+        panelDetalle.revalidate();
+        panelDetalle.repaint();
+    }
+
+    // === Editar receta seleccionada ===
     private void editarReceta() {
         int fila = tablaRecetas.getSelectedRow();
         if (fila == -1) {
@@ -151,21 +186,24 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
         }
 
         int id = (int) modeloTabla.getValueAt(fila, 0);
-        
-
-        Receta recetaSeleccionada = controladoraLogica.buscarRecetaPorId(id); // asegúrate de tener este método
+        Receta recetaSeleccionada = controladoraLogica.buscarRecetaPorId(id);
         List<RecetaDetalle> detalles = controladoraLogica.obtenerDetalleReceta(id);
 
-        int opcion = JOptionPane.showConfirmDialog(this, "Desea Editar esta Receta?", "Editar Receta", JOptionPane.OK_CANCEL_OPTION);
+        int opcion = JOptionPane.showConfirmDialog(this,
+                "Desea Editar esta Receta?",
+                "Editar Receta",
+                JOptionPane.OK_CANCEL_OPTION);
+
         if (opcion == JOptionPane.OK_OPTION) {
             recetaForm.cargarRecetaParaEditar(recetaSeleccionada, detalles);
-            // Mostrar el formulario
             mainView.mostrarFormularioReceta();
             cardLayout.show(contentPane, "gestionReceta");
-
+            revalidate();
+            repaint();
         }
     }
 
+    // === Eliminar receta seleccionada ===
     private void eliminarReceta() {
         int fila = tablaRecetas.getSelectedRow();
         if (fila == -1) {
@@ -186,43 +224,15 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
         }
     }
 
-    private void mostrarDetalleRecetaSeleccionada() {
-        int fila = tablaRecetas.getSelectedRow();
-        if (fila == -1) {
-            return;
-        }
-
-        int idReceta = (int) modeloTabla.getValueAt(fila, 0);
-        String nombre = (String) modeloTabla.getValueAt(fila, 1);
-        BigDecimal precio = (BigDecimal) modeloTabla.getValueAt(fila, 2);
-
-        lblNombre.setText("Nombre Receta: " + nombre);
-        lblPrecio.setText("Precio Receta: $" + precio);
-
-        List<RecetaDetalle> ingredientes = controladoraLogica.obtenerDetalleReceta(idReceta);
-
-        modeloIngredientes.setRowCount(0); // Limpia tabla antes de cargar nuevos datos
-
-        for (RecetaDetalle ing : ingredientes) {
-            String nombreInsumo = ing.getIdInsumo().getNombreInsumo();
-            String cantidad = ing.getCantidadInsumo().toPlainString();
-            String costo = "$" + ing.getCostoInsumo().toPlainString();
-
-            modeloIngredientes.addRow(new Object[]{nombreInsumo, cantidad, costo});
-        }
-        lblIngredientes.setText("Ingredientes: " + ingredientes.size());
-
-    }
-
+    // === Refrescar combo de insumos ===
     @Override
     public void refrescar() {
         List<Insumo> insumosActualizados = recargarInsumos();
         recetaForm.actualizarComboInsumos(insumosActualizados);
-
     }
 
+    // === Obtener insumos desde la lógica ===
     private List<Insumo> recargarInsumos() {
         return controladoraLogica.listarInsumos();
     }
-
 }
