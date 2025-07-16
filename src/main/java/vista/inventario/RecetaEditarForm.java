@@ -1,12 +1,18 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package vista.inventario;
 
-import logica.Insumo;
-import logica.RecetaDetalle;
-import logica.Receta;
-
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -16,12 +22,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import logica.ControladoraLogica;
+import logica.Insumo;
+import logica.Receta;
+import logica.RecetaDetalle;
 import logica.Refrescar;
 import logica.Validacion;
 import vista.MainView;
 
-public class RecetaForm extends JPanel {
+/**
+ *
+ * @author josepino
+ */
+public class RecetaEditarForm extends JPanel {
 
     private boolean modoEdicion = false;
     private Receta recetaOriginal = null;
@@ -29,7 +51,7 @@ public class RecetaForm extends JPanel {
     private JTextField txtNombreReceta;
     private JTable tablaInsumos;
     private DefaultTableModel modeloTabla;
-    private JButton btnAgregarInsumo, btnGuardarReceta, btnCancelar, btnEliminarInsumo;
+    private JButton btnAgregarInsumo, btnGuardarEdicionReceta, btnCancelar, btnEliminarInsumo;
     private JComboBox<Insumo> comboInsumos;
     private JTextField txtCantidad, txtCosto;
 
@@ -42,7 +64,7 @@ public class RecetaForm extends JPanel {
 
     private GestionRecetaForm gestionRecetaForm;
 
-    public RecetaForm(CardLayout cardLayout, JPanel contenedor, MainView mainView, Refrescar refrescar) {
+    public RecetaEditarForm(CardLayout cardLayout, JPanel contenedor, MainView mainView, Refrescar refrescar) {
         this.gestionRecetaForm = (GestionRecetaForm) refrescar;
         this.refrescar = refrescar;
         this.cardLayout = cardLayout;
@@ -55,6 +77,7 @@ public class RecetaForm extends JPanel {
         initComponents();
     }
 
+   
     private void initComponents() {
         Color azul = new Color(81, 209, 246);
         Color negro = new Color(0x000000);
@@ -63,7 +86,7 @@ public class RecetaForm extends JPanel {
         // Panel superior
         JPanel panelSuperior = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelSuperior.setBackground(azul);
-        JLabel lblTitulo = new JLabel("Crear Nueva Receta");
+        JLabel lblTitulo = new JLabel("Edicion de Receta");
         lblTitulo.setForeground(blanco);
         lblTitulo.setFont(new Font("SansSerif", Font.BOLD, 20));
         panelSuperior.add(lblTitulo);
@@ -75,7 +98,7 @@ public class RecetaForm extends JPanel {
         gbc.insets = new Insets(5, 10, 5, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
-        JLabel lblNombre = new JLabel("Nombre Receta:");
+        JLabel lblNombre = new JLabel("Nombre Receta a Editar:");
         lblNombre.setForeground(blanco);
         txtNombreReceta = new JTextField(20);
 
@@ -173,17 +196,16 @@ public class RecetaForm extends JPanel {
         scrollTabla.setPreferredSize(new Dimension(600, 150));
 
         // Botón guardar 
-        btnGuardarReceta = new JButton("Guardar Receta");
+        btnGuardarEdicionReceta = new JButton("Guardar Edicion Receta");
         btnCancelar = new JButton("Cancelar");
-        btnGuardarReceta.setBackground(negro);
-        btnGuardarReceta.setForeground(blanco);
+        btnGuardarEdicionReceta.setBackground(negro);
+        btnGuardarEdicionReceta.setForeground(blanco);
         btnCancelar.setBackground(negro);
         btnCancelar.setForeground(blanco);
-        btnGuardarReceta.addActionListener(new ActionListener() {
+        btnGuardarEdicionReceta.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
-                guardarReceta();
-
+                // aqui va la accion de Guardar la Edicion
             }
         });
 
@@ -205,7 +227,7 @@ public class RecetaForm extends JPanel {
 // 2. Panel de botones abajo (sur)
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(azul);
-        panelBotones.add(btnGuardarReceta);
+        panelBotones.add(btnGuardarEdicionReceta);
         panelBotones.add(btnCancelar);
 
 // 3. Agregar panel de botones al sur
@@ -239,7 +261,7 @@ public class RecetaForm extends JPanel {
 
     }
 
-    private void guardarReceta() {
+ /*   private void guardarReceta() {
         String nombre = txtNombreReceta.getText();
 
         //Valida si el nombre no tiene caracteres especiales o numeros
@@ -277,7 +299,7 @@ public class RecetaForm extends JPanel {
 
         cardLayout.show(contenedor, "inicio");
 
-    }
+    }*/
 
     public void recargarInsumos() {
 
@@ -295,5 +317,58 @@ public class RecetaForm extends JPanel {
             comboInsumos.addItem(insumo);
         }
     }
+
+    public void cargarRecetaParaEditar(Receta receta, List<RecetaDetalle> detalles) {
+
+        txtNombreReceta.setEditable(true);
+
+        this.recetaOriginal = receta;
+        this.modoEdicion = true;
+
+        txtNombreReceta.setText(receta.getNombreReceta());
+
+        // Si tienes otros campos como descripción, precio, etc., también los cargas aquí
+        // txtDescripcion.setText(receta.getDescripcion());
+        // Limpiar tabla de ingredientes actual
+        modeloTabla.setRowCount(0);
+
+        // Cargar los ingredientes desde detalles
+        for (RecetaDetalle detalle : detalles) {
+            Insumo insumo = detalle.getIdInsumo();
+            modeloTabla.addRow(new Object[]{
+                insumo.getNombreInsumo(),
+                detalle.getCantidadInsumo(),
+                detalle.getCostoInsumo()
+            });
+            System.out.println("nombre" + insumo.getNombreInsumo());
+            System.out.println("cantidad" + detalle.getCantidadInsumo());
+            System.out.println("costo" + detalle.getCostoInsumo());
+        }
+
+     
+    }
+    /*
+    private void actualizarReceta() {
+    String nuevoNombre = txtNombreReceta.getText().trim();
+    
+    List<Insumo> insumos = obtenerInsumosDesdeTabla();
+
+    // Verifica si el nombre cambió
+    if (!nuevoNombre.equalsIgnoreCase(recetaOriginal.getNombre())) {
+        if (Repositorio.recetaYaExiste(nuevoNombre)) {
+            JOptionPane.showMessageDialog(this, "Ya existe una receta con ese nombre.");
+            return;
+        }
+        recetaOriginal.setNombre(nuevoNombre);
+    }
+
+    recetaOriginal.setProcedimiento(procedimiento);
+    recetaOriginal.setInsumos(insumos);
+
+    Repositorio.actualizarReceta(recetaOriginal);
+    JOptionPane.showMessageDialog(this, "Receta actualizada correctamente.");
+    
+    this.dispose(); // o volver a la pantalla anterior
+}*/
 
 }

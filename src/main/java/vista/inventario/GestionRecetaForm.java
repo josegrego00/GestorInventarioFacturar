@@ -29,6 +29,8 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
     private CardLayout cardLayout;
 
     private RecetaForm recetaForm;
+    private RecetaEditarForm recetaEditarForm;
+
     private ControladoraLogica controladoraLogica;
     private MainView mainView;
 
@@ -117,12 +119,12 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
         // Panel de navegación con CardLayout
         cardLayout = new CardLayout();
         contentPane = new JPanel(cardLayout);
-        recetaForm = new RecetaForm(cardLayout, contentPane, mainView, this);
-        contentPane.add(recetaForm, "gestionReceta");
 
         // Eventos de botones
         btnCrear.addActionListener(e -> {
             refrescar();
+            recetaForm = new RecetaForm(cardLayout, contentPane, mainView, this);
+            contentPane.add(recetaForm, "gestionReceta");
             mainView.mostrarFormularioReceta();
             cardLayout.show(contentPane, "gestionReceta");
         });
@@ -151,7 +153,9 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
     // === Mostrar detalle de receta seleccionada ===
     private void mostrarDetalleRecetaSeleccionada() {
         int fila = tablaRecetas.getSelectedRow();
-        if (fila == -1) return;
+        if (fila == -1) {
+            return;
+        }
 
         int idReceta = (int) modeloTabla.getValueAt(fila, 0);
         String nombre = (String) modeloTabla.getValueAt(fila, 1);
@@ -195,11 +199,14 @@ public class GestionRecetaForm extends JPanel implements Refrescar {
                 JOptionPane.OK_CANCEL_OPTION);
 
         if (opcion == JOptionPane.OK_OPTION) {
-            recetaForm.cargarRecetaParaEditar(recetaSeleccionada, detalles);
+
+            recetaEditarForm = new RecetaEditarForm(cardLayout, contentPane, mainView, this); // actualiza el panel con dependencias
+            contentPane.add(recetaEditarForm, "editarReceta"); // asegúrate de usar una key válida
+            recetaEditarForm.cargarRecetaParaEditar(recetaSeleccionada, detalles);
             mainView.mostrarFormularioReceta();
-            cardLayout.show(contentPane, "gestionReceta");
-            revalidate();
-            repaint();
+            cardLayout.show(contentPane, "editarReceta");
+            mainView.setTitle("Sistema de Gestión - Editar Receta");
+
         }
     }
 

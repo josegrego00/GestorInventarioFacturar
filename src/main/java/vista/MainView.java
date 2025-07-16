@@ -16,6 +16,7 @@ public class MainView extends JFrame {
     // Paneles para cada módulo
     private vista.inventario.InsumoForm insumoForm;
     private vista.inventario.RecetaForm recetaForm;
+    
     private vista.inventario.GestionInsumoForm gestionInsumoForm;
     private vista.inventario.GestionRecetaForm gestionRecetaForm;
 
